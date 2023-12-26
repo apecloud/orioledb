@@ -213,6 +213,12 @@ RUN set -eux; \
 # install extra icu packages ( >=Alpine3.16 )
 		$EXTRA_ICU_PACKAGES \
 	; \
+	apk add python3 \
+	python3-dev \
+	linux-headers \
+	build-base \
+	py-pip\
+	; \
 	apk del --no-network .build-deps; \
 	cd /; \
 	rm -rf \
@@ -241,7 +247,10 @@ RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PG
 VOLUME /var/lib/postgresql/data
 
 COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["docker-entrypoint.sh"]
+COPY requirements.txt  /home
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r /home/requirements.txt
+# ENTRYPOINT ["docker-entrypoint.sh"]
 
 # We set the default STOPSIGNAL to SIGINT, which corresponds to what PostgreSQL
 # calls "Fast Shutdown mode" wherein new connections are disallowed and any
@@ -274,4 +283,4 @@ STOPSIGNAL SIGINT
 # that even 90 seconds may not be long enough in many instances.
 
 EXPOSE 5432
-CMD ["postgres"]
+# CMD ["postgres"，"-D"]

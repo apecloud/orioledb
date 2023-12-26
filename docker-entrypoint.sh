@@ -337,7 +337,7 @@ _main() {
 		fi
 	fi
 
-	exec "$@"
+	# exec "$@"
 }
 
 if ! _is_sourced; then
